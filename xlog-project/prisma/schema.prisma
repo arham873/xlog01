@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Storage {
+  id      Int     @id @default(autoincrement())
+  storage String  @db.VarChar(10)
+  id_edc  String  @db.VarChar(50)
+  Main    Main[]
+  History History[]
+}
+
+model Customer {
+  id            Int     @id @default(autoincrement())
+  customer_name String  @db.VarChar(100)
+  Main          Main[]
+  History       History[]
+}
+
+model TypeAsset {
+  id         Int     @id @default(autoincrement())
+  asset_type String  @db.VarChar(100)
+  Main       Main[]
+  History    History[]
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  name       String   @db.VarChar(100)
+  username   String   @unique @db.VarChar(100)
+  position   String   @db.VarChar(50)
+  password   String   @db.VarChar(255)
+  level      Int
+  created_at DateTime @default(now())
+  History    History[]
+}
+
+model Main {
+  id             Int       @id @default(autoincrement())
+  storage        Storage?  @relation(fields: [storage_id], references: [id])
+  storage_id     Int?
+  id_edc         String?   @db.VarChar(50)
+  asset          String?   @db.VarChar(100)
+  type_asset     TypeAsset? @relation(fields: [type_asset_id], references: [id])
+  type_asset_id  Int?
+  serial_number  String?   @unique @db.VarChar(100)
+  customer       Customer? @relation(fields: [customer_id], references: [id])
+  customer_id    Int?
+  status_asset   String?   @db.VarChar(20)
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @default(now())
+}
+
+model History {
+  id             Int       @id @default(autoincrement())
+  storage        Storage?  @relation(fields: [storage_id], references: [id])
+  storage_id     Int?
+  id_edc         String?   @db.VarChar(50)
+  asset          String?   @db.VarChar(100)
+  type_asset     TypeAsset? @relation(fields: [type_asset_id], references: [id])
+  type_asset_id  Int?
+  serial_number  String?   @db.VarChar(100)
+  customer       Customer? @relation(fields: [customer_id], references: [id])
+  customer_id    Int?
+  status_asset   String?   @db.VarChar(20)
+  admin          User?     @relation(fields: [admin_id], references: [id])
+  admin_id       Int?
+  updated_at     DateTime  @default(now())
+}
